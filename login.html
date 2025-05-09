@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Login / Sign Up - Smart Hotel Finder</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"/>
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body class="bg-light">
+  <div class="container py-5">
+    <h2 class="text-center mb-4" id="formTitle">Login to Smart Hotel Finder</h2>
+
+    <div class="row justify-content-center">
+      <div class="col-md-6">
+        
+        <!-- Login Form -->
+        <form id="loginForm" onsubmit="handleLogin(event)">
+          <div class="mb-3">
+            <label for="loginEmail" class="form-label">Email address</label>
+            <input type="email" id="loginEmail" class="form-control" required />
+          </div>
+          <div class="mb-3">
+            <label for="loginPassword" class="form-label">Password</label>
+            <input type="password" id="loginPassword" class="form-control" required />
+          </div>
+          <button type="submit" class="btn btn-primary w-100">Login</button>
+        </form>
+
+        <!-- Sign Up Form -->
+        <form id="signupForm" class="d-none" onsubmit="handleSignup(event)">
+          <div class="mb-3">
+            <label for="signupFirstName" class="form-label">First Name</label>
+            <input type="text" id="signupFirstName" class="form-control" required />
+          </div>
+          <div class="mb-3">
+            <label for="signupLastName" class="form-label">Last Name</label>
+            <input type="text" id="signupLastName" class="form-control" required />
+          </div>
+          <div class="mb-3">
+            <label for="signupEmail" class="form-label">Email</label>
+            <input type="email" id="signupEmail" class="form-control" required />
+          </div>
+          <div class="mb-3">
+            <label for="signupPassword" class="form-label">Password</label>
+            <input type="password" id="signupPassword" class="form-control" required />
+          </div>
+          <div class="mb-3">
+            <label for="confirmPassword" class="form-label">Confirm Password</label>
+            <input type="password" id="confirmPassword" class="form-control" required />
+          </div>
+          <button type="submit" class="btn btn-success w-100">Sign Up</button>
+        </form>
+
+        <!-- Toggle Link -->
+        <p class="text-center mt-3">
+          <a href="#" onclick="toggleForms()" id="toggleLink">Don't have an account? Sign up</a>
+        </p>
+
+        <p class="text-center">
+          <a href="index.html">← Back to Home</a>
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function handleLogin(e) {
+  e.preventDefault();
+  const email = document.getElementById("loginEmail").value;
+  const password = document.getElementById("loginPassword").value;
+
+  const storedEmail = localStorage.getItem("userEmail");
+  const storedPassword = localStorage.getItem("userPassword");
+
+  if (email !== storedEmail || password !== storedPassword) {
+    alert("Incorrect email or password.");
+    return;
+  }
+
+  localStorage.setItem("isLoggedIn", "true");
+  alert(`Welcome back, ${email}!`);
+  window.location.href = "index.html";
+}
+
+
+    function handleSignup(e) {
+  e.preventDefault();
+  const email = document.getElementById("signupEmail").value;
+  const password = document.getElementById("signupPassword").value;
+  const confirm = document.getElementById("confirmPassword").value;
+
+  if (password !== confirm) {
+    alert("Passwords do not match.");
+    return;
+  }
+
+  // Save credentials (simulated)
+  localStorage.setItem("userEmail", email);
+  localStorage.setItem("userPassword", password);
+  localStorage.setItem("isLoggedIn", "true");
+
+  alert(`Account created for ${email} (simulated)`);
+  window.location.href = "index.html";
+}
+
+
+    function toggleForms() {
+      const loginForm = document.getElementById("loginForm");
+      const signupForm = document.getElementById("signupForm");
+      const formTitle = document.getElementById("formTitle");
+      const toggleLink = document.getElementById("toggleLink");
+
+      const isLoginVisible = !loginForm.classList.contains("d-none");
+
+      loginForm.classList.toggle("d-none", isLoginVisible);
+      signupForm.classList.toggle("d-none", !isLoginVisible);
+
+      formTitle.textContent = isLoginVisible ? "Sign Up for Smart Hotel Finder" : "Login to Smart Hotel Finder";
+      toggleLink.textContent = isLoginVisible
+        ? "Already have an account? Login"
+        : "Don't have an account? Sign up";
+    }
+  </script>
+</body>
+</html>

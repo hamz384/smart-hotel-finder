@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Hotel Booking</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    .navbar {
+      margin-bottom: 20px;
+    }
+    .hotel-main-img {
+      width: 100%;
+      height: 250px;
+      object-fit: cover;
+      border-radius: 10px;
+    }
+    .form-section label {
+      font-weight: 500;
+    }
+    .room-table td, .room-table th {
+      vertical-align: middle;
+    }
+    .price-details td {
+      background-color: #f9f9f9;
+      font-style: italic;
+    }
+  </style>
+</head>
+<body class="bg-light">
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark mb-4">
+        <div class="container-fluid">
+          <a class="navbar-brand" href="index.html">Smart Hotel Finder</a>
+          <div class="collapse navbar-collapse">
+            <ul class="navbar-nav ms-auto">
+              <li class="nav-item">
+                <a class="nav-link active" href="index.html">🏠 Home</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="map.html">🗺️ Live Map</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="hotel-detail.html?hotel=The%20Lowry%20Hotel">🛏️ Booking</a>
+              </li>
+            </ul>
+          </div>j
+        </div>
+      </nav>
+
+  <div class="container py-4">
+    <h1 class="text-center mb-4" id="hotelTitle">Hotel Details</h1>
+
+    <div class="row mb-4">
+      <div class="col-md-8">
+        <img src="" alt="Hotel Image" id="mainImage" class="hotel-main-img mb-3">
+        <p><strong>📍 Address:</strong> <span id="hotelAddress">TBD</span></p>
+      </div>
+
+      <div class="col-md-4 form-section">
+        <form onsubmit="submitBooking(event)">
+          <div class="mb-2">
+            <label>First Name*</label>
+            <input type="text" class="form-control" required>
+          </div>
+          <div class="mb-2">
+            <label>Last Name*</label>
+            <input type="text" class="form-control" required>
+          </div>
+          <div class="mb-2">
+            <label>Email Address*</label>
+            <input type="email" class="form-control" required>
+          </div>
+          <div class="mb-2">
+            <label>Phone Number*</label>
+            <input type="tel" class="form-control" placeholder="+44" required>
+          </div>
+          <div class="mb-3">
+            <label>Country/Region*</label>
+            <select class="form-select" required>
+              <option value="United Kingdom">United Kingdom</option>
+              <option value="United States">United States</option>
+              <option value="India">India</option>
+              <option value="Other">Other</option>
+            </select>
+          </div>
+
+          <h5 class="mt-4">Availability</h5>
+          <div class="mb-2">
+            <label>Check-in Date</label>
+            <input type="date" id="checkIn" class="form-control" required>
+          </div>
+          <div class="mb-2">
+            <label>Check-out Date</label>
+            <input type="date" id="checkOut" class="form-control" required>
+          </div>
+          <div class="mb-2">
+            <label>Number of Guests</label>
+            <input type="number" class="form-control" value="2" min="1">
+          </div>
+
+          <div class="mb-2">
+            <label>Your Arrival Time</label>
+            <select class="form-select">
+              <option>Please Select</option>
+              <option>Morning (8AM - 12PM)</option>
+              <option>Afternoon (12PM - 4PM)</option>
+              <option>Evening (4PM - 8PM)</option>
+            </select>
+          </div>
+
+          <button type="submit" class="btn btn-primary w-100">Book Now</button>
+        </form>
+      </div>
+    </div>
+
+    <h5 class="mt-4 mb-2">Room Options</h5>
+    <table class="table table-bordered room-table">
+      <thead class="table-light">
+        <tr>
+          <th>Room Type</th>
+          <th>Number of Guests</th>
+          <th>Action</th>
+          <th>Show Prices</th>
+        </tr>
+      </thead>
+      <tbody id="roomTableBody">
+        <!-- JS will populate room rows -->
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Booking Confirmation Modal -->
+  <div class="modal fade" id="bookingModal" tabindex="-1" aria-labelledby="bookingModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="bookingModalLabel">Confirm Booking</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <p><strong>Hotel:</strong> <span id="modalHotelName"></span></p>
+          <p><strong>Room:</strong> <span id="modalRoomType"></span></p>
+          <p><strong>Guests:</strong> <span id="modalGuests"></span></p>
+          <p><strong>Price:</strong> <span id="modalPrice"></span></p>
+          <p><strong>Note:</strong> Confirmation email will be sent after completing personal details and submitting.</p>
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-primary" data-bs-dismiss="modal">Cancel</button>
+          <button class="btn btn-primary" data-bs-dismiss="modal">Confirm Booking</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    const hotels = {
+  "The Lowry Hotel": {
+    image: "images/lowry.jpg",
+    address: "50 Dearmans Pl, Salford, Manchester M3 5LH",
+    rooms: [
+      { type: "Suite with River View", guests: "2 + 1", price: "£160", description: "Includes breakfast and free Wi-Fi. Cancel up to 24 hours." },
+      { type: "Junior Suite", guests: "2", price: "£135", description: "Free gym access. Non-refundable." },
+      { type: "Deluxe King Double", guests: "2 + 1", price: "£120", description: "Optional breakfast £10 extra." },
+      { type: "Exec King Bedroom", guests: "2 + 1", price: "£175", description: "Balcony, River View, Late checkout." }
+    ]
+  },
+  "Radisson Blu": {
+    image: "images/radisson.jpg",
+    address: "Peter Street, Manchester M2 5GP",
+    rooms: [
+      { type: "Superior King", guests: "2", price: "£150", description: "City View, Wi-Fi, Breakfast included." },
+      { type: "Standard Twin", guests: "2", price: "£125", description: "Wi-Fi, Room only." }
+    ]
+  },
+  "Premier Inn Manchester": {
+    image: "images/premier.jpg",
+    address: "7-11 Lower Mosley Street, Manchester M2 3DW",
+    rooms: [
+      { type: "Standard Double", guests: "2", price: "£90", description: "Wi-Fi included. Family-friendly." },
+      { type: "Twin Room", guests: "2", price: "£85", description: "Room only. Early check-in available." }
+    ]
+  },
+  "CitySuites Aparthotel": {
+    image: "images/citysuites.jpg",
+    address: "16 Chapel St, Manchester M3 7NH",
+    rooms: [
+      { type: "Studio Apartment", guests: "2", price: "£145", description: "Kitchenette, Pool access." },
+      { type: "One-Bedroom Apartment", guests: "2 + 1", price: "£165", description: "Includes Wi-Fi and gym." }
+    ]
+  },
+  "Velvet Hotel": {
+    image: "images/velvet.jpg",
+    address: "2 Canal St, Manchester M1 3HE",
+    rooms: [
+      { type: "Deluxe Room", guests: "2", price: "£135", description: "Bar access. Free cocktail." },
+      { type: "Penthouse Suite", guests: "2 + 1", price: "£195", description: "Rooftop access. Breakfast included." }
+    ]
+  },
+  "Maldron Hotel Manchester": {
+    image: "images/maldron.jpg",
+    address: "60 Charles St, Manchester M1 7DF",
+    rooms: [
+      { type: "Double Room", guests: "2", price: "£115", description: "Good for business stays." },
+      { type: "Family Room", guests: "3", price: "£140", description: "Kids stay free. Wi-Fi included." }
+    ]
+  },
+  "Dakota Manchester": {
+    image: "images/dakota.jpg",
+    address: "29 Ducie St, Manchester M1 2JL",
+    rooms: [
+      { type: "Executive Room", guests: "2", price: "£190", description: "Breakfast & bar access." },
+      { type: "Grand Suite", guests: "2 + 1", price: "£220", description: "Terrace + River View." }
+    ]
+  },
+  "Park Inn by Radisson": {
+    image: "images/parkinn.jpg",
+    address: "4 Cheetham Hill Rd, Manchester M4 4EW",
+    rooms: [
+      { type: "Standard Room", guests: "2", price: "£130", description: "Gym access, River View." },
+      { type: "Superior Room", guests: "2 + 1", price: "£145", description: "Top floor, breakfast included." }
+    ]
+  },
+  "Jurys Inn Manchester": {
+    image: "images/jurysinn.jpg",
+    address: "56 Great Bridgewater St, Manchester M1 5LE",
+    rooms: [
+      { type: "Comfort Double", guests: "2", price: "£110", description: "Central location. Free cancellation." },
+      { type: "Family Triple", guests: "3", price: "£135", description: "Perfect for families." }
+    ]
+  }
+};
+
+  function populateHotelDetails(hotelName) {
+    const data = hotels[hotelName];
+    if (!data) return;
+
+    document.getElementById("hotelTitle").textContent = hotelName;
+    document.getElementById("mainImage").src = data.image;
+    document.getElementById("mainImage").alt = hotelName;
+    document.getElementById("hotelAddress").textContent = data.address;
+
+    const roomTable = document.getElementById("roomTableBody");
+    roomTable.innerHTML = "";
+
+    data.rooms.forEach(room => {
+      const mainRow = document.createElement("tr");
+      mainRow.innerHTML = `
+        <td>${room.type}</td>
+        <td>${room.guests}</td>
+        <td><button class="btn btn-primary btn-sm room-book">Book Now</button></td>
+        <td><button class="btn btn-primary btn-sm" onclick="toggleDetails(this)">Show Prices</button></td>
+      `;
+
+      const detailsRow = document.createElement("tr");
+      detailsRow.classList.add("price-details", "d-none");
+      detailsRow.innerHTML = `<td colspan="4">${room.price} • ${room.description}</td>`;
+
+      // Attach the booking modal trigger
+      mainRow.querySelector('.room-book').addEventListener('click', () => {
+        showBookingModal(hotelName, room.type, room.guests, room.price);
+      });
+
+      roomTable.appendChild(mainRow);
+      roomTable.appendChild(detailsRow);
+    });
+  }
+
+  function toggleDetails(button) {
+    const row = button.closest('tr');
+    const detailsRow = row.nextElementSibling;
+    detailsRow.classList.toggle('d-none');
+    button.textContent = detailsRow.classList.contains('d-none') ? 'Show Prices' : 'Hide Prices';
+  }
+
+  function showBookingModal(hotel, roomType, guests, price) {
+    document.getElementById('modalHotelName').textContent = hotel;
+    document.getElementById('modalRoomType').textContent = roomType;
+    document.getElementById('modalGuests').textContent = guests;
+    document.getElementById('modalPrice').textContent = price;
+    const modal = new bootstrap.Modal(document.getElementById('bookingModal'));
+    modal.show();
+  }
+
+  function submitBooking(event) {
+    event.preventDefault();
+    const checkIn = document.getElementById("checkIn").value;
+    const checkOut = document.getElementById("checkOut").value;
+
+    if (!checkIn || !checkOut) {
+      alert("Please select both check-in and check-out dates.");
+      return;
+    }
+
+    if (new Date(checkOut) <= new Date(checkIn)) {
+      alert("Check-out date must be after check-in date.");
+      return;
+    }
+
+    alert("Booking confirmed! You'll receive a confirmation email shortly.");
+  }
+
+  document.addEventListener("DOMContentLoaded", () => {
+    const selectedHotel = new URLSearchParams(window.location.search).get("hotel");
+    if (selectedHotel) {
+      populateHotelDetails(decodeURIComponent(selectedHotel));
+    }
+  });
+</script>
+
+</body>
+</html>
